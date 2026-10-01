@@ -18,6 +18,13 @@ concurrency:
 permissions:
   contents: read
 
+env:
+  # pubspec.lock records every package under https://pub.flutter-io.cn. Without
+  # this, pub treats the committed lock as unusable, re-resolves the whole
+  # dependency graph on every run and silently upgrades it (gpt_markdown jumped
+  # 1.2.1 -> 1.3.0 that way and broke `flutter analyze`).
+  PUB_HOSTED_URL: https://pub.flutter-io.cn
+
 jobs:
   flutter-checks:
     name: Flutter Analyze & Test
@@ -45,6 +52,14 @@ jobs:
 
       - name: Flutter pub get
         run: flutter pub get
+
+      - name: Verify lockfile unchanged
+        run: |
+          git diff --exit-code -- pubspec.lock || {
+            echo "::error::'flutter pub get' rewrote pubspec.lock, so the build is not using the committed dependency versions."
+            echo "Check that PUB_HOSTED_URL matches the host recorded in pubspec.lock, and only regenerate the lock deliberately."
+            exit 1
+          }
 
       - name: Flutter analyze
         run: flutter analyze
@@ -79,6 +94,14 @@ jobs:
 
       - name: Flutter pub get
         run: flutter pub get
+
+      - name: Verify lockfile unchanged
+        run: |
+          git diff --exit-code -- pubspec.lock || {
+            echo "::error::'flutter pub get' rewrote pubspec.lock, so the build is not using the committed dependency versions."
+            echo "Check that PUB_HOSTED_URL matches the host recorded in pubspec.lock, and only regenerate the lock deliberately."
+            exit 1
+          }
 
       - name: Build Windows release
         run: flutter build windows --release
@@ -154,6 +177,14 @@ jobs:
 
       - name: Flutter pub get
         run: flutter pub get
+
+      - name: Verify lockfile unchanged
+        run: |
+          git diff --exit-code -- pubspec.lock || {
+            echo "::error::'flutter pub get' rewrote pubspec.lock, so the build is not using the committed dependency versions."
+            echo "Check that PUB_HOSTED_URL matches the host recorded in pubspec.lock, and only regenerate the lock deliberately."
+            exit 1
+          }
 
       - name: Prepare macOS native project
         run: flutter build macos --debug --config-only
