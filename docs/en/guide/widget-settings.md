@@ -22,6 +22,16 @@ Whether the widget is displayed is independent of whether the main application w
 
 Orb mode is only configurable when the widget is enabled and the current platform supports desktop widgets. Switching display forms does not modify notes, statistics, or personal information.
 
+## Keep Window on Top
+
+"Keep window on top" controls whether the widget window always stays above other windows. It is enabled by default:
+
+- When enabled, the widget uses the topmost window level and covers normal windows, maximized windows, and full-screen applications;
+- When disabled, the widget drops to the normal window level. After you switch to a game or another full-screen or maximized window, that window covers the widget instead of blocking your view;
+- It is only configurable when the widget is enabled and the current platform supports desktop widgets; otherwise the switch is unavailable.
+
+Turning the switch off does not hide the widget, and it does not change the timer state, statistics, orb mode, or widget position. After the game window is sent to the background, the widget is still visible in its original position. To make the widget disappear completely, use "Show Desktop Widget" or orb mode.
+
 ## Mouse Operations
 
 Mouse operations on the widget are consistent across Windows and macOS:

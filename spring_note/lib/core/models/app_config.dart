@@ -169,6 +169,7 @@ class AppConfig {
     required this.showDesktopWidget,
     required this.desktopWidgetPosition,
     required this.desktopWidgetOrbMode,
+    required this.desktopWidgetAlwaysOnTop,
     required this.desktopWidgetWallpaperSettings,
     required this.showTrayIcon,
     required this.closeToTray,
@@ -210,6 +211,9 @@ class AppConfig {
   final bool showDesktopWidget;
   final DesktopWidgetPosition? desktopWidgetPosition;
   final bool desktopWidgetOrbMode;
+
+  /// 组件窗口是否置顶显示。关闭后普通窗口（含全屏游戏）可以盖住组件。
+  final bool desktopWidgetAlwaysOnTop;
   final DesktopWidgetWallpaperSettings desktopWidgetWallpaperSettings;
   final bool showTrayIcon;
   final bool closeToTray;
@@ -264,6 +268,7 @@ class AppConfig {
       showDesktopWidget: true,
       desktopWidgetPosition: null,
       desktopWidgetOrbMode: false,
+      desktopWidgetAlwaysOnTop: true,
       desktopWidgetWallpaperSettings: DesktopWidgetWallpaperSettings.defaults,
       showTrayIcon: true,
       closeToTray: true,
@@ -319,6 +324,8 @@ class AppConfig {
         json['desktopWidgetPosition'],
       ),
       desktopWidgetOrbMode: json['desktopWidgetOrbMode'] as bool? ?? false,
+      desktopWidgetAlwaysOnTop:
+          json['desktopWidgetAlwaysOnTop'] as bool? ?? true,
       desktopWidgetWallpaperSettings:
           json['desktopWidgetWallpaperSettings'] != null
           ? DesktopWidgetWallpaperSettings.fromJson(
@@ -398,6 +405,7 @@ class AppConfig {
       'showDesktopWidget': showDesktopWidget,
       'desktopWidgetPosition': desktopWidgetPosition?.toJson(),
       'desktopWidgetOrbMode': desktopWidgetOrbMode,
+      'desktopWidgetAlwaysOnTop': desktopWidgetAlwaysOnTop,
       'desktopWidgetWallpaperSettings': desktopWidgetWallpaperSettings.toJson(),
       'showTrayIcon': showTrayIcon,
       'closeToTray': closeToTray,
@@ -440,6 +448,7 @@ class AppConfig {
     bool? showDesktopWidget,
     Object? desktopWidgetPosition = _sentinel,
     bool? desktopWidgetOrbMode,
+    bool? desktopWidgetAlwaysOnTop,
     DesktopWidgetWallpaperSettings? desktopWidgetWallpaperSettings,
     bool? showTrayIcon,
     bool? closeToTray,
@@ -487,6 +496,8 @@ class AppConfig {
           ? this.desktopWidgetPosition
           : desktopWidgetPosition as DesktopWidgetPosition?,
       desktopWidgetOrbMode: desktopWidgetOrbMode ?? this.desktopWidgetOrbMode,
+      desktopWidgetAlwaysOnTop:
+          desktopWidgetAlwaysOnTop ?? this.desktopWidgetAlwaysOnTop,
       desktopWidgetWallpaperSettings:
           desktopWidgetWallpaperSettings ?? this.desktopWidgetWallpaperSettings,
       showTrayIcon: nextShowTrayIcon,

@@ -51,6 +51,8 @@
   "settingsComponentTitle": "Widget settings",
   "settingsShowDesktopWidget": "Show desktop widget",
   "settingsOrbMode": "Desktop widget orb mode",
+  "settingsAlwaysOnTop": "Keep window on top",
+  "settingsAlwaysOnTopDescription": "When off, games and other full-screen windows can cover the widget",
   "settingsWidgetWallpaperTitle": "Widget wallpaper",
   "settingsWidgetWallpaperModeDefaultWhite": "Default white",
   "settingsPromptTitle": "Prompts",

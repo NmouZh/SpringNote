@@ -51,6 +51,8 @@
   "settingsComponentTitle": "组件设置",
   "settingsShowDesktopWidget": "显示桌面组件",
   "settingsOrbMode": "桌面组件圆球模式",
+  "settingsAlwaysOnTop": "窗口置顶",
+  "settingsAlwaysOnTopDescription": "关闭后游戏或其它全屏窗口可以盖住组件",
   "settingsWidgetWallpaperTitle": "组件壁纸",
   "settingsWidgetWallpaperModeDefaultWhite": "默认白色",
   "settingsPromptTitle": "提示词",

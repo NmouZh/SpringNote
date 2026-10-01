@@ -1739,4 +1739,11 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get settingsReportImageInput =>
       'Send note images to AI when generating reports';
+
+  @override
+  String get settingsAlwaysOnTop => 'Keep window on top';
+
+  @override
+  String get settingsAlwaysOnTopDescription =>
+      'When off, games and other full-screen windows can cover the widget';
 }

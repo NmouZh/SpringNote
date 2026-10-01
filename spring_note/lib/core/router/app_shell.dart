@@ -605,6 +605,7 @@ class _AppShellState extends State<AppShell> with WidgetsBindingObserver {
           fontScaleFactor: AppTheme.fontScaleFactor(config.fontScale),
           position: config.desktopWidgetPosition,
           orbMode: config.desktopWidgetOrbMode,
+          alwaysOnTop: config.desktopWidgetAlwaysOnTop,
           darkMode: _desktopWidgetDarkMode(config),
           widgetWallpaperMode: widgetWallpaperMode,
           widgetWallpaperColor: widgetWallpaper.solidColorArgb,

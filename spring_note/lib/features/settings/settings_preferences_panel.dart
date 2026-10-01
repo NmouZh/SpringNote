@@ -482,6 +482,26 @@ class _PreferencesPanel extends StatelessWidget {
                         onChanged(config.copyWith(desktopWidgetOrbMode: value))
                   : null,
             ),
+            _SwitchSettingRow(
+              label: strings.settingsAlwaysOnTop,
+              value:
+                  PlatformFeatureSupport.supportsDesktopWidget &&
+                  config.showDesktopWidget &&
+                  config.desktopWidgetAlwaysOnTop,
+              enabled:
+                  PlatformFeatureSupport.supportsDesktopWidget &&
+                  config.showDesktopWidget,
+              description: PlatformFeatureSupport.supportsDesktopWidget
+                  ? strings.settingsAlwaysOnTopDescription
+                  : windowsOnlyLabel,
+              onChanged:
+                  PlatformFeatureSupport.supportsDesktopWidget &&
+                      config.showDesktopWidget
+                  ? (value) => onChanged(
+                      config.copyWith(desktopWidgetAlwaysOnTop: value),
+                    )
+                  : null,
+            ),
           ],
         ),
         if (PlatformFeatureSupport.supportsDesktopWidget &&

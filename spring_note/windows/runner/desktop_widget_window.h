@@ -42,6 +42,7 @@ class DesktopWidgetWindow {
     std::wstring font_family = L"Segoe UI Variable";
     double font_scale_factor = 1.0;
     bool orb_mode = false;
+    bool always_on_top = true;
     int wallpaper_mode = 0;       // 0=defaultWhite, 1=solid, 2=image
     COLORREF wallpaper_color = RGB(255, 255, 255);
     std::wstring wallpaper_image_path;
@@ -65,6 +66,8 @@ class DesktopWidgetWindow {
   };
 
   bool EnsureWindow();
+  void ApplyWindowZOrder();
+  HWND TopmostInsertAfter() const;
   void RegisterChannelHandler();
   void Paint();
   void MoveToDefaultPosition();

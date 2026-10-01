@@ -16,6 +16,7 @@ void main() {
       fontScaleFactor: 1.0,
       position: DesktopWidgetPosition(screenId: 'display-1', x: 10, y: 20),
       orbMode: true,
+      alwaysOnTop: false,
       darkMode: true,
     );
 
@@ -25,6 +26,7 @@ void main() {
       'y': 20.0,
     });
     expect(snapshot.toJson()['orbMode'], isTrue);
+    expect(snapshot.toJson()['alwaysOnTop'], isFalse);
     expect(snapshot.toJson()['darkMode'], isTrue);
   });
 

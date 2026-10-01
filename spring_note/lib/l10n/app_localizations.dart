@@ -3208,6 +3208,18 @@ abstract class AppLocalizations {
   /// In zh, this message translates to:
   /// **'生成日报/周报/月报时将笔记图片发送给 AI'**
   String get settingsReportImageInput;
+
+  /// No description provided for @settingsAlwaysOnTop.
+  ///
+  /// In zh, this message translates to:
+  /// **'窗口置顶'**
+  String get settingsAlwaysOnTop;
+
+  /// No description provided for @settingsAlwaysOnTopDescription.
+  ///
+  /// In zh, this message translates to:
+  /// **'关闭后游戏或其它全屏窗口可以盖住组件'**
+  String get settingsAlwaysOnTopDescription;
 }
 
 class _AppLocalizationsDelegate

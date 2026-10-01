@@ -478,6 +478,7 @@ void DesktopWidgetWindow::RegisterChannelHandler() {
 void DesktopWidgetWindow::ShowOrUpdate(const flutter::EncodableMap& arguments) {
   const bool was_visible = window_ && IsWindowVisible(window_) != FALSE;
   const bool was_orb_mode = state_.orb_mode;
+  const bool was_always_on_top = state_.always_on_top;
   state_.running = ReadBool(arguments, "running", state_.running);
   state_.work_seconds = ReadInt(arguments, "workSeconds", state_.work_seconds);
   state_.coins = ReadDouble(arguments, "coins", state_.coins);
@@ -497,6 +498,8 @@ void DesktopWidgetWindow::ShowOrUpdate(const flutter::EncodableMap& arguments) {
                             state_.font_scale_factor),
                  0.8, 1.4);
   state_.orb_mode = ReadBool(arguments, "orbMode", state_.orb_mode);
+  state_.always_on_top =
+      ReadBool(arguments, "alwaysOnTop", state_.always_on_top);
   state_.wallpaper_mode =
       std::clamp(ReadInt(arguments, "widgetWallpaperMode", state_.wallpaper_mode),
                  0, 2);
@@ -541,8 +544,12 @@ void DesktopWidgetWindow::ShowOrUpdate(const flutter::EncodableMap& arguments) {
   }
   if (!was_visible) {
     ShowWindow(window_, SW_SHOWNOACTIVATE);
-    SetWindowPos(window_, HWND_TOPMOST, 0, 0, 0, 0,
+    SetWindowPos(window_, TopmostInsertAfter(), 0, 0, 0, 0,
                  SWP_NOMOVE | SWP_NOSIZE | SWP_NOACTIVATE);
+  } else if (was_always_on_top != state_.always_on_top) {
+    // 置顶开关在窗口已显示时被切换：立刻套用新的 Z 序，
+    // 否则组件要等窗口重建才会变成非置顶。
+    ApplyWindowZOrder();
   }
   RedrawWindow(window_, nullptr, nullptr,
                RDW_INVALIDATE | RDW_UPDATENOW | RDW_NOERASE);
@@ -572,17 +579,33 @@ bool DesktopWidgetWindow::EnsureWindow() {
   window_class.lpfnWndProc = DesktopWidgetWindow::WindowProc;
   RegisterClass(&window_class);
 
+  const DWORD ex_style =
+      WS_EX_TOOLWINDOW | WS_EX_NOACTIVATE |
+      (state_.always_on_top ? WS_EX_TOPMOST : 0);
   window_ = CreateWindowEx(
-      WS_EX_TOPMOST | WS_EX_TOOLWINDOW | WS_EX_NOACTIVATE,
-      kWidgetWindowClassName, L"SpringNote Widget", WS_POPUP, CW_USEDEFAULT,
-      CW_USEDEFAULT, CurrentWidth(), CurrentHeight(), nullptr, nullptr,
-      GetModuleHandle(nullptr), this);
+      ex_style, kWidgetWindowClassName, L"SpringNote Widget", WS_POPUP,
+      CW_USEDEFAULT, CW_USEDEFAULT, CurrentWidth(), CurrentHeight(), nullptr,
+      nullptr, GetModuleHandle(nullptr), this);
   if (!window_) {
     return false;
   }
 
   ApplyWindowShapeAndSize(false);
   return true;
+}
+
+HWND DesktopWidgetWindow::TopmostInsertAfter() const {
+  // HWND_NOTOPMOST 让组件停在普通窗口层级：全屏游戏或普通窗口被激活后
+  // 会盖住组件，正是「关闭窗口置顶」期望的行为。
+  return state_.always_on_top ? HWND_TOPMOST : HWND_NOTOPMOST;
+}
+
+void DesktopWidgetWindow::ApplyWindowZOrder() {
+  if (!window_) {
+    return;
+  }
+  SetWindowPos(window_, TopmostInsertAfter(), 0, 0, 0, 0,
+               SWP_NOMOVE | SWP_NOSIZE | SWP_NOACTIVATE);
 }
 
 void DesktopWidgetWindow::MoveToDefaultPosition() {
@@ -592,7 +615,7 @@ void DesktopWidgetWindow::MoveToDefaultPosition() {
   const int height = CurrentHeight();
   const int x = work_area.right - width - 28;
   const int y = work_area.bottom - height - 28;
-  SetWindowPos(window_, HWND_TOPMOST, x, y, width, height,
+  SetWindowPos(window_, TopmostInsertAfter(), x, y, width, height,
                SWP_NOACTIVATE);
 }
 
@@ -601,8 +624,8 @@ void DesktopWidgetWindow::MoveToSavedOrDefaultPosition() {
     const HMONITOR monitor = MonitorForPosition(saved_position_.value());
     const RECT next =
         ClampedRectForOrigin(saved_position_->x, saved_position_->y, monitor);
-    SetWindowPos(window_, HWND_TOPMOST, next.left, next.top, CurrentWidth(),
-                 CurrentHeight(), SWP_NOACTIVATE);
+    SetWindowPos(window_, TopmostInsertAfter(), next.left, next.top,
+                 CurrentWidth(), CurrentHeight(), SWP_NOACTIVATE);
     NotifyPositionChanged();
     SavePositionToRegistry();
     return;
@@ -649,8 +672,8 @@ void DesktopWidgetWindow::ApplyWindowShapeAndSize(bool preserve_bottom_right) {
   const bool changed = next.left != rect.left || next.top != rect.top ||
                        width != old_width || height != old_height;
   if (changed) {
-    SetWindowPos(window_, HWND_TOPMOST, next.left, next.top, width, height,
-                 SWP_NOACTIVATE | SWP_NOCOPYBITS | SWP_DEFERERASE);
+    SetWindowPos(window_, TopmostInsertAfter(), next.left, next.top, width,
+                 height, SWP_NOACTIVATE | SWP_NOCOPYBITS | SWP_DEFERERASE);
   }
   const bool region_changed = UpdateWindowRegion(width, height, false);
   if (changed || region_changed) {
@@ -793,7 +816,7 @@ void DesktopWidgetWindow::SetBoundedWindowOrigin(int x, int y) {
   const RECT proposed{x, y, x + CurrentWidth(), y + CurrentHeight()};
   const HMONITOR monitor = MonitorFromRect(&proposed, MONITOR_DEFAULTTONEAREST);
   const RECT next = ClampedRectForOrigin(x, y, monitor);
-  SetWindowPos(window_, HWND_TOPMOST, next.left, next.top, 0, 0,
+  SetWindowPos(window_, TopmostInsertAfter(), next.left, next.top, 0, 0,
                SWP_NOSIZE | SWP_NOACTIVATE);
 }
 
@@ -807,7 +830,7 @@ void DesktopWidgetWindow::ClampWindowToVisibleMonitor(bool notify) {
   const HMONITOR monitor = MonitorFromRect(&rect, MONITOR_DEFAULTTONEAREST);
   const RECT next = ClampedRectForOrigin(rect.left, rect.top, monitor);
   if (next.left != rect.left || next.top != rect.top) {
-    SetWindowPos(window_, HWND_TOPMOST, next.left, next.top, 0, 0,
+    SetWindowPos(window_, TopmostInsertAfter(), next.left, next.top, 0, 0,
                  SWP_NOSIZE | SWP_NOACTIVATE);
   }
   if (notify) {

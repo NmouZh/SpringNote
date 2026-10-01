@@ -1670,4 +1670,10 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get settingsReportImageInput => '生成日报/周报/月报时将笔记图片发送给 AI';
+
+  @override
+  String get settingsAlwaysOnTop => '窗口置顶';
+
+  @override
+  String get settingsAlwaysOnTopDescription => '关闭后游戏或其它全屏窗口可以盖住组件';
 }

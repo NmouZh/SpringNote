@@ -736,6 +736,7 @@ struct DesktopWidgetState {
   var fontFamily = "system"
   var fontScaleFactor = 1.0
   var orbMode = false
+  var alwaysOnTop = true
   var darkMode = false
   var wallpaperMode = 0          // 0=defaultWhite, 1=solid, 2=image
   var wallpaperColor: Int = -1   // ARGB int, -1 means unset
@@ -763,6 +764,7 @@ struct DesktopWidgetState {
       max(0.8, doubleValue(arguments, "fontScaleFactor", fallback: fontScaleFactor))
     )
     orbMode = boolValue(arguments, "orbMode", fallback: orbMode)
+    alwaysOnTop = boolValue(arguments, "alwaysOnTop", fallback: alwaysOnTop)
     darkMode = boolValue(arguments, "darkMode", fallback: darkMode)
     wallpaperMode = min(2, max(0, intValue(arguments, "widgetWallpaperMode", fallback: wallpaperMode)))
     let wpColor = intValue(arguments, "widgetWallpaperColor", fallback: -1)
@@ -877,6 +879,7 @@ final class DesktopWidgetWindowController: NSObject {
       ?? DesktopWidgetPosition.fromUserDefaults()
 
     let panel = ensurePanel()
+    panel.applyAlwaysOnTop(state.alwaysOnTop)
     panel.widgetView.expanded = expanded
     panel.widgetView.state = state
     applyPanelSize(panel, preserveBottomRight: positioned)
@@ -1072,6 +1075,7 @@ final class DesktopWidgetWindowController: NSObject {
 
 final class DesktopWidgetPanel: NSPanel {
   let widgetView: DesktopWidgetView
+  private var appliedAlwaysOnTop: Bool?
 
   init(controller: DesktopWidgetWindowController, contentRect: NSRect) {
     widgetView = DesktopWidgetView(controller: controller, frame: contentRect)
@@ -1082,15 +1086,28 @@ final class DesktopWidgetPanel: NSPanel {
       defer: false
     )
 
-    isFloatingPanel = true
-    level = .floating
-    collectionBehavior = [.canJoinAllSpaces, .fullScreenAuxiliary, .stationary]
     backgroundColor = .clear
     isOpaque = false
     hasShadow = true
     hidesOnDeactivate = false
     isReleasedWhenClosed = false
     contentView = widgetView
+    applyAlwaysOnTop(true)
+  }
+
+  /// 应用「窗口置顶」开关。置顶时组件浮在全屏应用之上；关闭后降到普通
+  /// 窗口层级并取消 fullScreenAuxiliary，游戏或其它窗口可以盖住组件。
+  func applyAlwaysOnTop(_ alwaysOnTop: Bool) {
+    // 组件状态每秒同步一次，属性值未变时直接跳过，避免重复设置窗口层级。
+    guard appliedAlwaysOnTop != alwaysOnTop else {
+      return
+    }
+    appliedAlwaysOnTop = alwaysOnTop
+    isFloatingPanel = alwaysOnTop
+    level = alwaysOnTop ? .floating : .normal
+    collectionBehavior = alwaysOnTop
+      ? [.canJoinAllSpaces, .fullScreenAuxiliary, .stationary]
+      : [.canJoinAllSpaces, .stationary]
   }
 
   override var canBecomeKey: Bool {

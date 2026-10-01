@@ -387,6 +387,48 @@ void main() {
     );
   });
 
+  testWidgets('settings page persists desktop widget always-on-top', (
+    WidgetTester tester,
+  ) async {
+    tester.view.physicalSize = const Size(1440, 900);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.resetPhysicalSize);
+    addTearDown(tester.view.resetDevicePixelRatio);
+
+    final service = _MemoryLocalDataService(AppConfig.defaults());
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: AppTheme.light(),
+        home: SettingsPage(
+          localDataState: _state(AppConfig.defaults()),
+          localDataService: service,
+        ),
+      ),
+    );
+
+    await tester.ensureVisible(find.text('窗口置顶'));
+    await tester.pumpAndSettle();
+
+    final alwaysOnTopRow = find.ancestor(
+      of: find.text('窗口置顶'),
+      matching: find.byWidgetPredicate(
+        (widget) => widget is Row && widget.children.last is Switch,
+      ),
+    );
+    expect(alwaysOnTopRow, findsOneWidget);
+
+    await tester.tap(
+      find.descendant(of: alwaysOnTopRow, matching: find.byType(Switch)),
+    );
+    await tester.pump();
+
+    // 默认置顶；开关只在支持的平台上可点击，因此不支持的平台应保持 true。
+    expect(
+      service.savedConfig.desktopWidgetAlwaysOnTop,
+      PlatformFeatureSupport.supportsDesktopWidget ? isFalse : isTrue,
+    );
+  });
+
   testWidgets('hotkeys page lets the user pick the submit shortcut', (
     WidgetTester tester,
   ) async {

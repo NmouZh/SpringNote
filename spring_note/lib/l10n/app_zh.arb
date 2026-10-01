@@ -516,5 +516,7 @@
   "memoryImageInvalid": "仅支持 5 MB 以内的 png、jpg、webp、gif 图片。",
   "memoryImageModelUnsupported": "当前回忆模型不支持图片输入。",
   "memoryImageSaveFailed": "图片保存失败，请重试。",
-  "settingsReportImageInput": "生成日报/周报/月报时将笔记图片发送给 AI"
+  "settingsReportImageInput": "生成日报/周报/月报时将笔记图片发送给 AI",
+  "settingsAlwaysOnTop": "窗口置顶",
+  "settingsAlwaysOnTopDescription": "关闭后游戏或其它全屏窗口可以盖住组件"
 }

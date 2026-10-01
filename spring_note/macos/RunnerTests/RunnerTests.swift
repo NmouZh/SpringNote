@@ -28,6 +28,28 @@ final class RunnerTests: XCTestCase {
     XCTAssertFalse(state.darkMode)
   }
 
+  func testDesktopWidgetStateDefaultsToAlwaysOnTop() {
+    let state = DesktopWidgetState()
+
+    XCTAssertTrue(state.alwaysOnTop)
+  }
+
+  func testDesktopWidgetStateReadsAndRetainsAlwaysOnTop() {
+    var state = DesktopWidgetState()
+
+    state.update(with: ["alwaysOnTop": false])
+
+    XCTAssertFalse(state.alwaysOnTop)
+
+    state.update(with: ["progress": 0.42])
+
+    XCTAssertFalse(state.alwaysOnTop)
+
+    state.update(with: ["alwaysOnTop": true])
+
+    XCTAssertTrue(state.alwaysOnTop)
+  }
+
   func testDesktopWidgetColorsPaletteMatchesLightAndDarkThemes() {
     let light = DesktopWidgetColors.palette(darkMode: false)
     let dark = DesktopWidgetColors.palette(darkMode: true)

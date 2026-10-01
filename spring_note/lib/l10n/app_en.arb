@@ -516,5 +516,7 @@
   "memoryImageInvalid": "Only png, jpg, webp or gif images up to 5 MB are supported.",
   "memoryImageModelUnsupported": "The selected memory model does not support image input.",
   "memoryImageSaveFailed": "Failed to save the images. Please try again.",
-  "settingsReportImageInput": "Send note images to AI when generating reports"
+  "settingsReportImageInput": "Send note images to AI when generating reports",
+  "settingsAlwaysOnTop": "Keep window on top",
+  "settingsAlwaysOnTopDescription": "When off, games and other full-screen windows can cover the widget"
 }

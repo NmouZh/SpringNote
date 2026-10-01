@@ -19,6 +19,7 @@ class DesktopWidgetWindowSnapshot {
     required this.fontScaleFactor,
     required this.position,
     required this.orbMode,
+    required this.alwaysOnTop,
     required this.darkMode,
     this.widgetWallpaperMode = 0,
     this.widgetWallpaperColor = 0xFFFFFFFF,
@@ -37,6 +38,9 @@ class DesktopWidgetWindowSnapshot {
   final double fontScaleFactor;
   final DesktopWidgetPosition? position;
   final bool orbMode;
+
+  /// 窗口是否置顶（always-on-top）。关闭后其它窗口可以盖住组件窗口。
+  final bool alwaysOnTop;
   final bool darkMode;
   final int widgetWallpaperMode;
   final int widgetWallpaperColor;
@@ -56,6 +60,7 @@ class DesktopWidgetWindowSnapshot {
       'fontScaleFactor': fontScaleFactor,
       'position': position?.toJson(),
       'orbMode': orbMode,
+      'alwaysOnTop': alwaysOnTop,
       'darkMode': darkMode,
       'widgetWallpaperMode': widgetWallpaperMode,
       'widgetWallpaperColor': widgetWallpaperColor,
